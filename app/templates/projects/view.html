@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-folder2"></i> {{ project.name }}</h2>
+        <a href="/projects/{{ project.id }}/tasks/create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add Task
+        </a>
+    </div>
+    <p class="text-muted">{{ project.description or 'No description' }}</p>
+
+    <!-- Tasks -->
+    <h5 class="mt-4">Tasks</h5>
+    {% if project.tasks %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th><th>Status</th><th>Priority</th>
+                    <th>Assigned To</th><th>Due Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in project.tasks %}
+                <tr class="{{ 'table-danger' if task.is_overdue() else '' }}">
+                    <td>{{ task.title }}</td>
+                    <td>
+                        <span class="badge
+                            {{ 'bg-secondary' if task.status == 'todo' else
+                               'bg-primary'   if task.status == 'in_progress' else
+                               'bg-success' }}">
+                            {{ task.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            {{ 'bg-danger' if task.priority == 'high' else
+                               'bg-warning text-dark' if task.priority == 'medium' else
+                               'bg-info text-dark' }}">
+                            {{ task.priority }}
+                        </span>
+                    </td>
+                    <td>{{ task.assignee.username if task.assignee else 'Unassigned' }}</td>
+                    <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '—' }}</td>
+                    <td>
+                        <form method="POST" action="/tasks/{{ task.id }}/update_status" class="d-inline">
+                            <select name="status" class="form-select form-select-sm d-inline w-auto"
+                                    onchange="this.form.submit()">
+                                <option value="todo"        {{ 'selected' if task.status == 'todo' }}>Todo</option>
+                                <option value="in_progress" {{ 'selected' if task.status == 'in_progress' }}>In Progress</option>
+                                <option value="done"        {{ 'selected' if task.status == 'done' }}>Done</option>
+                            </select>
+                        </form>
+                        {% if current_user.role == 'admin' %}
+                        <form method="POST" action="/tasks/{{ task.id }}/delete" class="d-inline"
+                              onsubmit="return confirm('Delete task?')">
+                            <button class="btn btn-sm btn-outline-danger ms-1">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No tasks yet. <a href="/projects/{{ project.id }}/tasks/create">Add one!</a></div>
+    {% endif %}
+
+    <!-- Members -->
+    <h5 class="mt-4">Team Members</h5>
+    <ul class="list-group mb-3">
+        {% for member in members %}
+        <li class="list-group-item d-flex justify-content-between">
+            <span>👤 {{ member.user.username }}</span>
+            <span class="badge bg-primary">{{ member.role }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Member (admin only) -->
+    {% if current_user.role == 'admin' %}
+    <div class="card mt-3">
+        <div class="card-body">
+            <h6>Add Member</h6>
+            <form method="POST" action="/projects/{{ project.id }}/add_member" class="row g-2">
+                <div class="col-md-5">
+                    <select name="user_id" class="form-select">
+                        {% for user in all_users %}
+                            {% if user.id not in member_ids %}
+                            <option value="{{ user.id }}">{{ user.username }} ({{ user.role }})</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="role" class="form-select">
+                        <option value="member">Member</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

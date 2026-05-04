@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">👋 Welcome, {{ current_user.username }}!
+        <span class="badge bg-warning text-dark">{{ current_user.role }}</span>
+    </h2>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-list-task"></i> Total Tasks</h6>
+                    <h2 class="card-text">{{ total_tasks }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-check-circle"></i> Completed</h6>
+                    <h2 class="card-text">{{ completed }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-arrow-repeat"></i> In Progress</h6>
+                    <h2 class="card-text">{{ in_progress }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-danger shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-exclamation-circle"></i> Overdue</h6>
+                    <h2 class="card-text">{{ overdue }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    {% if total_tasks > 0 %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h6 class="mb-2">Overall Progress</h6>
+            <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success" style="width: {{ (completed / total_tasks * 100)|round }}%">
+                    {{ (completed / total_tasks * 100)|round }}%
+                </div>
+            </div>
+            <small class="text-muted mt-1 d-block">{{ completed }} of {{ total_tasks }} tasks completed</small>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Recent Tasks -->
+        <div class="col-md-7 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Tasks</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_tasks %}
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Task</th><th>Project</th><th>Status</th><th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in recent_tasks %}
+                            <tr>
+                                <td>{{ task.title }}</td>
+                                <td>
+                                    <a href="/projects/{{ task.project.id }}">
+                                        {{ task.project.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {{ 'bg-secondary' if task.status == 'todo' else
+                                           'bg-primary'   if task.status == 'in_progress' else
+                                           'bg-success' }}">
+                                        {{ task.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {{ 'bg-danger' if task.priority == 'high' else
+                                           'bg-warning text-dark' if task.priority == 'medium' else
+                                           'bg-info text-dark' }}">
+                                        {{ task.priority }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted p-3">No tasks yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Summary -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-folder2-open"></i> Projects</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if all_projects %}
+                    <ul class="list-group list-group-flush">
+                        {% for project in all_projects %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/projects/{{ project.id }}" class="text-decoration-none">
+                                {{ project.name }}
+                            </a>
+                            <span class="badge bg-primary rounded-pill">
+                                {{ project.tasks|length }} tasks
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted p-3">No projects yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Tasks -->
+    {% if overdue_tasks %}
+    <div class="card border-danger shadow-sm mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Overdue Tasks</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Task</th><th>Project</th><th>Due Date</th><th>Assigned To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in overdue_tasks %}
+                    <tr class="table-danger">
+                        <td>{{ task.title }}</td>
+                        <td><a href="/projects/{{ task.project.id }}">{{ task.project.name }}</a></td>
+                        <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ task.assignee.username if task.assignee else 'Unassigned' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
