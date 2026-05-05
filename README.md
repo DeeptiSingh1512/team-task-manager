@@ -38,8 +38,6 @@ bashpython -m venv venv
 # Windows
 venv\Scripts\activate
 
-# Mac/Linux
-source venv/bin/activate
 3. Install dependencies
 bashpip install -r requirements.txt
 4. Create .env file
