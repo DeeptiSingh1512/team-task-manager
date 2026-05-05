@@ -8,6 +8,8 @@ A full-stack web application where teams can manage projects, assign tasks, and 
 
 https://team-task-manager-1-bgi7.onrender.com
 
+> **Note:** Render is used for deployment since Railway’s free tier limit was exceeded, ensuring the app remains live and accessible.
+
 ## GitHub Repository
 
 https://github.com/DeeptiSingh1512/team-task-manager
