@@ -4,6 +4,12 @@ A full-stack web application to manage projects, assign tasks, and track progres
 🚀 Live Demo
 👉 https://team-task-manager-1-bgi7.onrender.com
 
+## 📝 Deployment Note
+
+This project was assigned to be deployed on **Railway**, however Railway's free tier resource limit was exceeded. The application has been deployed on **Render** (free tier) as an alternative, and all features are **fully functional** on the live URL.
+
+> Live URL: https://team-task-manager-1-bgi7.onrender.com
+
 📂 GitHub Repository
 View Source Code
 
