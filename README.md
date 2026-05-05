@@ -1,101 +1,142 @@
-📌 Team Task Manager (Full-Stack Web App)
-A full-stack web application to manage projects, assign tasks, and track progress with role-based access control.
+# Team Task Manager
 
-🚀 Live Demo
-👉 https://team-task-manager-1-bgi7.onrender.com
+A full-stack web application where teams can manage projects, assign tasks, and track progress. It supports two roles — Admin and Member — with different levels of access.
 
-## 📝 Deployment Note
+---
 
-This project was assigned to be deployed on **Railway**, however Railway's free tier resource limit was exceeded. The application has been deployed on **Render** (free tier) as an alternative, and all features are **fully functional** on the live URL.
+## Live Demo
 
-> Live URL: https://team-task-manager-1-bgi7.onrender.com
+https://team-task-manager-1-bgi7.onrender.com
 
-📂 GitHub Repository
-View Source Code
+## GitHub Repository
 
-✨ Features
+https://github.com/DeeptiSingh1512/team-task-manager
 
-🔐 User Authentication (Signup/Login)
-👥 Role-Based Access (Admin / Member)
-📁 Project Management
-✅ Task Creation & Assignment
-📊 Dashboard with:
+---
 
-Total Tasks
-Completed Tasks
-In-Progress Tasks
-Overdue Tasks
+## What this app does
 
+- Users can sign up and log in securely
+- Admins can create projects and add team members
+- Tasks can be created, assigned to members, and tracked by status
+- Each task has a priority level (high, medium, low) and a due date
+- The dashboard shows a summary of all tasks — how many are done, in progress, or overdue
+- Overdue tasks are highlighted so nothing gets missed
+- Members have limited access — they cannot create or delete projects and tasks
 
-📈 Progress Tracking
-⚠️ Overdue Task Alerts
+---
 
+## Tech Stack
 
-🛠️ Tech Stack
-LayerTechnologyBackendPython 3, FlaskDatabaseSQLite (dev), PostgreSQL (prod)ORMFlask-SQLAlchemyAuthenticationFlask-Login, Flask-BcryptFrontendHTML, CSS, Bootstrap 5DeploymentRender
+- Backend: Python 3, Flask
+- Database: SQLite (local), PostgreSQL (production)
+- ORM: Flask-SQLAlchemy
+- Auth: Flask-Login, Flask-Bcrypt
+- Frontend: HTML, CSS, Bootstrap 5
+- Deployed on: Render
 
-⚙️ Local Setup
-1. Clone the repository
-bashgit clone https://github.com/DeeptiSingh1512/team-task-manager.git
+---
+
+## How to run locally
+
+1. Clone the repo
+
+git clone https://github.com/DeeptiSingh1512/team-task-manager.git
 cd team-task-manager
-2. Create virtual environment
-bashpython -m venv venv
 
-# Windows
+2. Create and activate virtual environment
+
+python -m venv venv
+
+Windows:
 venv\Scripts\activate
 
+Mac/Linux:
+source venv/bin/activate
+
 3. Install dependencies
-bashpip install -r requirements.txt
-4. Create .env file
+
+pip install -r requirements.txt
+
+4. Create a .env file with the following
+
 SECRET_KEY=your-secret-key-here
+
 5. Run the app
-bashpython run.py
-Visit http://127.0.0.1:5000 in your browser.
 
-🗄️ Database Models
-User
-├── id, username, email, password, role, created_at
-├── owns → Projects
-└── assigned → Tasks
+python run.py
 
-Project
-├── id, name, description, owner_id, created_at
-├── has → Tasks
-└── has → ProjectMembers
+Then open http://127.0.0.1:5000 in your browser.
 
-ProjectMember
-├── id, project_id, user_id, role, joined_at
+---
 
-Task
-├── id, title, description, status, priority
-├── due_date, created_at
-├── project_id, assigned_to, created_by
-└── is_overdue() → bool
+## Database Models
 
-🔐 Role-Based Access Control
-FeatureAdminMemberCreate Project✅❌Delete Project✅❌Add Members✅❌Create Task✅✅Update Task Status✅✅Delete Task✅❌View Dashboard✅✅
+User — stores username, email, hashed password, and role
+Project — belongs to a user (owner), has many tasks and members
+ProjectMember — links users to projects with a role
+Task — belongs to a project, can be assigned to a user, has status and due date
 
-📁 Project Structure
+---
+
+## Role-Based Access
+
+Feature            Admin     Member
+Create Project     Yes       No
+Delete Project     Yes       No
+Add Members        Yes       No
+Create Task        Yes       Yes
+Update Status      Yes       Yes
+Delete Task        Yes       No
+View Dashboard     Yes       Yes
+
+---
+
+## Project Structure
+
 team-task-manager/
-├── app/
-│   ├── __init__.py          # Flask app factory
-│   ├── models.py            # Database models
-│   ├── auth/                # Authentication routes
-│   ├── main/                # Dashboard routes
-│   ├── projects/            # Project routes
-│   ├── tasks/               # Task routes
-│   ├── templates/           # HTML templates
-│   └── static/              # CSS, JS assets
-├── config.py                # App configuration
-├── run.py                   # Entry point
-├── Procfile                 # Deployment config
-├── runtime.txt              # Python version
-└── requirements.txt         # Dependencies
+    app/
+        __init__.py
+        models.py
+        auth/
+        main/
+        projects/
+        tasks/
+        templates/
+        static/
+    config.py
+    run.py
+    requirements.txt
+    Procfile
+    runtime.txt
 
-📊 API Endpoints
-MethodEndpointDescriptionAccessGET/POST/signupRegister new userPublicGET/POST/loginLogin userPublicGET/logoutLogout userLogged inGET/dashboardView dashboardLogged inGET/projectsList projectsLogged inGET/POST/projects/createCreate projectAdminGET/projects/<id>View projectMemberPOST/projects/<id>/deleteDelete projectAdminPOST/projects/<id>/add_memberAdd memberAdminGET/POST/projects/<id>/tasks/createCreate taskMemberPOST/tasks/<id>/update_statusUpdate statusMemberPOST/tasks/<id>/deleteDelete taskAdmin
+---
 
-👩‍💻 Author
+## API Endpoints
+
+Method    Endpoint                          Description
+GET/POST  /signup                           Register new user
+GET/POST  /login                            Login
+GET       /logout                           Logout
+GET       /dashboard                        Dashboard
+GET       /projects                         List projects
+GET/POST  /projects/create                  Create project (Admin)
+GET       /projects/<id>                    View project
+POST      /projects/<id>/delete             Delete project (Admin)
+POST      /projects/<id>/add_member         Add member (Admin)
+GET/POST  /projects/<id>/tasks/create       Create task
+POST      /tasks/<id>/update_status         Update task status
+POST      /tasks/<id>/delete                Delete task (Admin)
+
+---
+
+## Deployment Note
+
+This project was originally assigned to be deployed on Railway. However, Railway's free tier limit was exceeded during development. The application has been deployed on Render as an alternative, and all features are fully functional on the live URL.
+
+---
+
+## Author
+
 Deepti Singh
-
-GitHub: @DeeptiSingh1512
+GitHub: https://github.com/DeeptiSingh1512
